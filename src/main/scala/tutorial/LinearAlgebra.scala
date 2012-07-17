@@ -1,14 +1,6 @@
 package tutorial
 
-import scala.Tuple2.apply
-import scala.virtualization.lms.common.Base
-import scala.virtualization.lms.common.BaseExp
-import scala.virtualization.lms.common.CompileScala
-import scala.virtualization.lms.common.EffectExp
-import scala.virtualization.lms.common.LiftNumeric
-import scala.virtualization.lms.common.ScalaGenBase
-import scala.virtualization.lms.common.ScalaGenEffect
-import tutorial.Usage.{ConcreteProg => self}
+import scala.virtualization.lms.common._
 
 // Concepts and concrete syntax
 trait LinearAlgebra extends Base {
