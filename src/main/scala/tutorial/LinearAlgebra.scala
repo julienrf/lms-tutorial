@@ -69,6 +69,8 @@ trait Prog extends LinearAlgebra {
 
   def f(v: Rep[Vector]): Rep[Vector] = v * unit(42.0)
 
+  def g(v: Rep[Vector]): Rep[Vector] = v * unit(1.0)
+
 }
 
 object Usage extends App {
@@ -76,7 +78,8 @@ object Usage extends App {
   object ConcreteProg extends Prog with EffectExp with LinearAlgebraExp with LinearAlgebraOpt with CompileScala { self =>
     override val codegen = new ScalaGenEffect with ScalaGenLinearAlgebra { val IR: self.type = self }
     lazy val compiledF = {
-      println(codegen.emitSource(f, "f", new java.io.PrintWriter(System.out)))
+      codegen.emitSource(f, "f", new java.io.PrintWriter(System.out))
+      codegen.emitSource(g, "g", new java.io.PrintWriter(System.out))
       compile(f)
     }
   }
