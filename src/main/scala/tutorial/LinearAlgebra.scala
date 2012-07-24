@@ -11,20 +11,22 @@ trait LinearAlgebra extends Base {
 
   // Concrete syntax
   def infix_*(v: Rep[Vector], k: Rep[Double]): Rep[Vector] = vector_scale(v, k)
-  def infix_*(k: Rep[Double], v: Rep[Vector]): Rep[Vector] = vector_scale(v, k)
 
   implicit def vectorManifest: Manifest[Vector]
 }
 
 // Interpreter
-trait LinearAlgebraInterpreter extends LinearAlgebra {
+trait Interpreter extends Base {
+  override type Rep[+A] = A
+  override def unit[T : Manifest](x: T) = x
+}
+
+trait LinearAlgebraInterpreter extends LinearAlgebra with Interpreter {
 
   override type Vector = Seq[Double]
-  override type Rep[+A] = A
 
   override def vector_scale(v: Seq[Double], k: Double) = v map (_ * k)
 
-  override def unit[T : Manifest](x: T): Rep[T] = x
   override def vectorManifest = manifest[Vector]
 }
 
