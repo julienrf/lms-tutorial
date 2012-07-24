@@ -7,10 +7,10 @@ trait LinearAlgebra extends Base {
 
   // Concepts
   type Vector
-  def vector_scale(v1: Rep[Vector], k: Rep[Double]): Rep[Vector]
+  def vector_scale(v: Rep[Vector], k: Rep[Double]): Rep[Vector]
 
   // Concrete syntax
-  def infix_*(v1: Rep[Vector], k: Rep[Double]): Rep[Vector] = vector_scale(v1, k)
+  def infix_*(v: Rep[Vector], k: Rep[Double]): Rep[Vector] = vector_scale(v, k)
 
   implicit def vectorManifest: Manifest[Vector]
 }
@@ -21,7 +21,7 @@ trait LinearAlgebraInterpreter extends LinearAlgebra {
   override type Vector = Seq[Double]
   override type Rep[+A] = A
 
-  override def vector_scale(v: Seq[Double], k: Double): Seq[Double] = v map (_ * k)
+  override def vector_scale(v: Seq[Double], k: Double) = v map (_ * k)
 
   override def unit[T : Manifest](x: T): Rep[T] = x
   override def vectorManifest = manifest[Vector]
@@ -30,19 +30,18 @@ trait LinearAlgebraInterpreter extends LinearAlgebra {
 // Intermediate representation
 trait LinearAlgebraExp extends LinearAlgebra with BaseExp {
 
+  case class VectorScale(v: Exp[Vector], k: Exp[Double]) extends Def[Vector]
+
+  override def vector_scale(v: Exp[Vector], k: Exp[Double]) = VectorScale(v, k)
+
   override type Vector = Seq[Double]
-
-  case class VectorScale(v1: Exp[Vector], k: Exp[Double]) extends Def[Vector]
-
-  override def vector_scale(v1: Exp[Vector], k: Exp[Double]): Exp[Vector] = VectorScale(v1, k)
-
   override def vectorManifest = manifest[Vector]
 }
 
 // Optimizations working on the intermediate representation
 trait LinearAlgebraOpt extends LinearAlgebraExp {
 
-  override def vector_scale(v: Exp[Vector], k: Exp[Double]): Exp[Vector] = k match {
+  override def vector_scale(v: Exp[Vector], k: Exp[Double]) = k match {
     case Const(1.0) => v
     case _ => super.vector_scale(v, k)
   }
@@ -66,9 +65,9 @@ trait ScalaGenLinearAlgebra extends ScalaGenBase {
 
 
 // Usage
-trait Prog extends LinearAlgebra with LiftNumeric {
+trait Prog extends LinearAlgebra {
 
-  def f(v: Rep[Vector]): Rep[Vector] = v * 42.0
+  def f(v: Rep[Vector]): Rep[Vector] = v * unit(42.0)
 
 }
 
