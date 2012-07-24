@@ -11,6 +11,7 @@ trait LinearAlgebra extends Base {
 
   // Concrete syntax
   def infix_*(v: Rep[Vector], k: Rep[Double]): Rep[Vector] = vector_scale(v, k)
+  def infix_*(k: Rep[Double], v: Rep[Vector]): Rep[Vector] = vector_scale(v, k)
 
   implicit def vectorManifest: Manifest[Vector]
 }
