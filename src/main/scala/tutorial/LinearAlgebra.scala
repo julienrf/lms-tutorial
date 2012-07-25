@@ -71,23 +71,15 @@ trait Prog extends LinearAlgebra {
 
 object Usage extends App {
 
-  object ConcreteProg extends Prog with EffectExp with LinearAlgebraExp with LinearAlgebraOpt with CompileScala { self =>
+  val concreteProg = new Prog with EffectExp with LinearAlgebraExp with LinearAlgebraOpt with CompileScala { self =>
     override val codegen = new ScalaGenEffect with ScalaGenLinearAlgebra { val IR: self.type = self }
-    lazy val compiledF = {
-      codegen.emitSource(f, "f", new java.io.PrintWriter(System.out))
-      codegen.emitSource(g, "g", new java.io.PrintWriter(System.out))
-      compile(f)
-    }
+    codegen.emitSource(f, "F", new java.io.PrintWriter(System.out))
+    codegen.emitSource(g, "G", new java.io.PrintWriter(System.out))
   }
+  val f = concreteProg.compile(concreteProg.f)
+  println(f(Seq(1.0, 2.0)))
 
-  val t = System.currentTimeMillis
-  println(ConcreteProg.compiledF(Seq(1.0, 2.0)))
-  println(System.currentTimeMillis - t)
-
-  object InterpretedProg extends Prog with LinearAlgebraInterpreter
-
-  val t2 = System.currentTimeMillis
-  println(InterpretedProg.f(Seq(1.0, 2.0)))
-  println(System.currentTimeMillis - t2)
+  val interpretedProg = new Prog with LinearAlgebraInterpreter
+  println(interpretedProg.f(Seq(1.0, 2.0)))
 
 }
