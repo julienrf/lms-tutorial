@@ -19,7 +19,7 @@ trait Interpreter extends Base {
   override def unit[A : Manifest](a: A) = a
 }
 
-trait LinearAlgebraInterpreter extends LinearAlgebra with Interpreter {
+trait LinearAlgebraInterpreter extends LinearAlgebra { this: Interpreter =>
   override type Vector = Seq[Double]
   override def vector_scale(v: Seq[Double], k: Double) = v map (_ * k)
 }
@@ -79,7 +79,7 @@ object Usage extends App {
   val f = concreteProg.compile(concreteProg.f)
   println(f(Seq(1.0, 2.0)))
 
-  val interpretedProg = new Prog with LinearAlgebraInterpreter
+  val interpretedProg = new Prog with Interpreter with LinearAlgebraInterpreter
   println(interpretedProg.f(Seq(1.0, 2.0)))
 
 }
