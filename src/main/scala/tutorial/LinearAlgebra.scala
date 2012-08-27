@@ -61,7 +61,7 @@ trait ScalaGenLinearAlgebra extends ScalaGenBase {
 
 
 // Usage
-trait Prog extends LinearAlgebra {
+trait Prog { this: LinearAlgebra =>
 
   def f(v: Rep[Vector]): Rep[Vector] = v * unit(42.0)
 
