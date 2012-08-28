@@ -3,7 +3,7 @@ package tutorial
 import scala.virtualization.lms.common._
 
 // Concepts and concrete syntax
-trait LinearAlgebra extends Base {
+trait LinearAlgebra { this: Base =>
 
   // Concepts
   type Vector
@@ -25,7 +25,7 @@ trait LinearAlgebraInterpreter extends LinearAlgebra { this: Interpreter =>
 }
 
 // Intermediate representation
-trait LinearAlgebraExp extends LinearAlgebra with BaseExp {
+trait LinearAlgebraExp extends LinearAlgebra { this: BaseExp =>
 
   case class VectorScale(v: Exp[Vector], k: Exp[Double]) extends Def[Vector]
 
@@ -35,7 +35,7 @@ trait LinearAlgebraExp extends LinearAlgebra with BaseExp {
 }
 
 // Optimizations working on the intermediate representation
-trait LinearAlgebraOpt extends LinearAlgebraExp {
+trait LinearAlgebraOpt extends LinearAlgebraExp { this: BaseExp =>
 
   override def vector_scale(v: Exp[Vector], k: Exp[Double]) = k match {
     case Const(1.0) => v
@@ -46,7 +46,7 @@ trait LinearAlgebraOpt extends LinearAlgebraExp {
 
 // Scala code generator
 trait ScalaGenLinearAlgebra extends ScalaGenBase {
-  val IR: LinearAlgebraExp
+  val IR: BaseExp with LinearAlgebraExp
   import IR._
 
   override def emitNode(sym: Sym[Any], node: Def[Any]): Unit = node match {
@@ -61,7 +61,7 @@ trait ScalaGenLinearAlgebra extends ScalaGenBase {
 
 
 // Usage
-trait Prog { this: LinearAlgebra =>
+trait Prog { this: Base with LinearAlgebra =>
 
   def f(v: Rep[Vector]): Rep[Vector] = v * unit(42.0)
 
