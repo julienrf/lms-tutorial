@@ -2,8 +2,10 @@ name := "lms-tutorial"
 
 resolvers += ScalaToolsSnapshots
 
-scalaVersion := "2.10.0-M1-virtualized"
+scalaOrganization := "org.scala-lang.virtualized"
 
-libraryDependencies += "EPFL" %% "lms" % "0.2"
+scalaVersion := "2.10.0-M7"
+
+libraryDependencies += "EPFL" %% "lms" % "0.3-SNAPSHOT"
 
 scalacOptions += "-Yvirtualize"
