@@ -10,7 +10,9 @@ trait LinearAlgebra { this: Base =>
   def vector_scale(v: Rep[Vector], k: Rep[Double]): Rep[Vector]
 
   // Concrete syntax
-  final def infix_*(v: Rep[Vector], k: Rep[Double]): Rep[Vector] = vector_scale(v, k)
+  implicit class VectorOps(v: Rep[Vector]) {
+    def * (k: Rep[Double]): Rep[Vector] = vector_scale(v, k)
+  }
 }
 
 // Interpreter
