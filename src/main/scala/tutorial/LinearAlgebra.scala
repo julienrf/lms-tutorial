@@ -15,22 +15,22 @@ trait LinearAlgebra extends Base {
   }
 }
 
-// Interpreter
-trait Interpreter extends Base {
-  override type Rep[+A] = A
-  override def unit[A : Manifest](a: A) = a
-}
 
-trait LinearAlgebraInterpreter extends LinearAlgebra with Interpreter {
+trait LinearAlgebraInterpreter extends LinearAlgebra with ShallowInterpreter {
+
   override type Vector = Seq[Double]
+
   override def vector_scale(v: Seq[Double], k: Double) = v map (_ * k)
+
 }
 
-// Intermediate representation
+// Deep embedding: use an abstract intermediate representation to model concepts of the DSL
 trait LinearAlgebraExp extends LinearAlgebra with BaseExp {
 
+  // Reification of the vector scaling operation into a intermediate representation node
   case class VectorScale(v: Exp[Vector], k: Exp[Double]) extends Def[Vector]
 
+  // The implementation just returns the corresponding intermediate representation node
   override def vector_scale(v: Exp[Vector], k: Exp[Double]) = VectorScale(v, k)
 
   override type Vector = Seq[Double]
@@ -61,27 +61,3 @@ trait ScalaGenLinearAlgebra extends ScalaGenBase {
 
 }
 
-
-// Usage
-trait Prog extends LinearAlgebra {
-
-  def f(v: Rep[Vector]): Rep[Vector] = v * unit(42.0)
-
-  def g(v: Rep[Vector]): Rep[Vector] = v * unit(1.0)
-
-}
-
-object Usage extends App {
-
-  val concreteProg = new Prog with LinearAlgebraOpt with EffectExp with CompileScala { self =>
-    override val codegen = new ScalaGenEffect with ScalaGenLinearAlgebra { val IR: self.type = self }
-    codegen.emitSource(f, "F", new java.io.PrintWriter(System.out))
-    codegen.emitSource(g, "G", new java.io.PrintWriter(System.out))
-  }
-  val f = concreteProg.compile(concreteProg.f)
-  println(f(Seq(1.0, 2.0)))
-
-  val interpretedProg = new Prog with LinearAlgebraInterpreter
-  println(interpretedProg.f(Seq(1.0, 2.0)))
-
-}
